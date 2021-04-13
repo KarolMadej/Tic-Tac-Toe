@@ -1,0 +1,51 @@
+PROTOKÓŁ DO GRY KÓŁKO I KRZYŻYK
+
+I) Podstawowe informacje
+
+1) Aplikacja klienta po uruchomieniu od razu łączy się z zerwerem gry.
+2) Format pakietu jest w postaci: Nagłówkek Dane\n
+3) Dane jest to pole opcjonalne które może posiadać 0-2 wartości oddzielone spacjami.
+4) Przesyłane dane są przesyłane poprzez szyfrowane połączeniem TLS.
+5) Na warstwie transportowej wykorzystywany jest protokół TCP/IP.
+6) Gra jest rozgrywana na serwerze, a klienci tylko wysyłają swoje ruchy i odbieraja obecna sytuacje na planszy.
+7) Przed rozpoczęciem gry oraz po zakończeniu rozgrywki jest wyszukiway przeciwnik.
+8) Jeśli jakikolwiek z graczy zostanie rozłączony z rozgrywki to przeciwnik wygrywa walkowerem.
+
+II) Charakterystyka wysyłanych komunikatów przez klienta.
+
+a) JOINROOM
+Jest to nagłówek nieposiadający danych. Informuje on tylko serwer że gracz chce dołączyc do gry, po czym serwer dodaje
+gracza do gry bądź tworzy nową grę. Gra sie rozpoczyna gdy dwaj gracze będą w jednym pokoju.
+Wysyłany nagłówek:
+JOINROOM\n
+
+b) MAKEMOVE
+Jest to nagłówek który ma za zadanie informoać serwer o ruchu dokonanym przez gracza. Dane są z zakresu 0-2.
+Przykładowy nagłówek:
+MAKEMOVE 0 2\n
+
+III) Charakterystyka wysyłanych komunikatów przez serwer.
+
+a) GAMESTATE
+Jest to nagłówek który przesyła wszystkie informacje o stanie prowadzonej gry. Poszczególne pola zawierają informację:
+- czy dany gracz ma ruch (True/False)
+- jak wygląda plansza rozgrywki (gdzie każdy znak może być "-"/"X"/"O")
+
+Przykładowy nagłówek:
+GAMESTATE True X--O-----\n
+
+b) END
+Ten nagłówek ma za zadanie informowanie gaczy o zakończeniu rozgrywki i posaida informacje o wyniku.
+Wynik może posiadać wartości: True/False/Draw
+Przykładowy nagłówek:
+END Draw\n
+
+c) BADREQUEST
+Informuje klienta o tym że podane zaptanie jest błędne. Jako dane zawarty jest komunikat o błędzie.
+Kody błędów:
+- 1 - zły format przychodzących danych
+- 2 - odebrano niewłaściwy nagłówek
+- 3 - nieznany błąd
+
+Przykłądowy nagłówek:
+BADREQUEST 1\n
